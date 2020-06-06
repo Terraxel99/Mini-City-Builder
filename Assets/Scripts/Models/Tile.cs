@@ -19,9 +19,9 @@ public class Tile
 
     public enum TileType
     {
+        UNKNOWN,
         EMPTY,
         BUILDING,
         BUILT,
-        UNKNOWN
     }
 }
