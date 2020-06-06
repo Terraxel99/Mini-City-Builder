@@ -3,28 +3,46 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    public Transform cameraPosition;
+
     public float cameraNormalSpeed = 10.0f;
     public float cameraHighSpeed = 25.0f;
     private float cameraMovementSpeed;
     public float cameraMovementTime = 50.0f;
+    public float cameraRotationSpeed = 5.0f;
+    public Vector3 zoomAmount;
 
     /// <summary>
     /// The position of the camera in the world.
     /// </summary>
     public Vector3 currentPosition { get; private set; }
+    /// <summary>
+    /// The rotation of the camera in the world.
+    /// </summary>
+    public Quaternion currentRotation { get; private set; }
+    /// <summary>
+    /// The zoom of the camera in the world.
+    /// </summary>
+    public Vector3 currentZoom { get; private set; }
 
 
     private void Start()
     {
         this.cameraMovementSpeed = this.cameraNormalSpeed;
         this.currentPosition = this.transform.position;
-       // TODO : Positionner la caméra au point de départ de la map. 
+        this.currentRotation = this.transform.rotation;
+        this.ResetCurrentZoomToCameraPosition();
     }
 
     private void Update()
     {
-        this.CalculateCameraTranslation();
-        this.ApplyCameraTranslation();
+        this.CalculateCameraTranslations();
+        this.ApplyCameraTranslations();
+
+        this.CalculateCameraRotation();
+
+        this.ResetCurrentZoomToCameraPosition();
+        this.CalculateCameraZoom();
     }
 
     #region Camera Translation
@@ -32,7 +50,7 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Calculates the movement of the camera at the next frame.
     /// </summary>
-    private void CalculateCameraTranslation()
+    private void CalculateCameraTranslations()
     {
         this.cameraMovementSpeed = Input.GetKey(KeyCode.LeftShift) ? this.cameraHighSpeed : this.cameraNormalSpeed;
 
@@ -106,7 +124,7 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Applies the translation to the camera.
     /// </summary>
-    private void ApplyCameraTranslation()
+    private void ApplyCameraTranslations()
     {
         this.transform.position = Vector3.Lerp(this.transform.position, this.currentPosition, (Time.deltaTime * this.cameraMovementTime));
     }
@@ -115,13 +133,67 @@ public class CameraController : MonoBehaviour
 
     #region Camera Rotation
 
+    /// <summary>
+    /// Calculates when to rotate the camera and in which direction.
+    /// </summary>
+    private void CalculateCameraRotation()
+    {
+        if (Input.GetKey(KeyCode.E))
+            this.CalculateCameraRotationHorizontalAxis();
 
+        if (Input.GetKey(KeyCode.A))
+            this.CalculateCameraRotationHorizontalAxis(false);
+    }
+
+    /// <summary>
+    /// Applies rotation to the camera.
+    /// </summary>
+    /// <param name="positiveMovement">True if positive rotation angle. False if negative rotation angle.</param>
+    private void CalculateCameraRotationHorizontalAxis(bool positiveMovement = true)
+    {
+        float rotationSpeed = positiveMovement ? this.cameraRotationSpeed : (-this.cameraRotationSpeed);
+        this.currentRotation *= Quaternion.Euler(Vector3.up * rotationSpeed);
+
+        this.transform.rotation = Quaternion.Lerp(this.transform.rotation, this.currentRotation, (Time.deltaTime * this.cameraMovementTime));
+    }
 
     #endregion
 
     #region Camera Zoom
 
+    /// <summary>
+    /// Calculates whether the camera has to zoom in or out.
+    /// </summary>
+    private void CalculateCameraZoom()
+    {
+        if (Input.GetKeyDown(KeyCode.KeypadPlus) || Input.GetAxis("Mouse ScrollWheel") > 0f)
+            this.ApplyZoom();
 
+        if (Input.GetKeyDown(KeyCode.KeypadMinus) || Input.GetAxis("Mouse ScrollWheel") < 0f)
+            this.ApplyZoom(false);
+    }
+
+    /// <summary>
+    /// Sets the current zoom to the current local position of the camera.
+    /// </summary>
+    private void ResetCurrentZoomToCameraPosition()
+    {
+        this.currentZoom = this.cameraPosition.localPosition;
+    }
+
+    /// <summary>
+    /// Applies a zoom to the camera.
+    /// </summary>
+    /// <param name="zoomIn">True to zoom in, false to zoom out.</param>
+    private void ApplyZoom(bool zoomIn = true)
+    {
+        if (zoomIn)
+            this.currentZoom += this.zoomAmount;
+        else
+            this.currentZoom -= this.zoomAmount;
+
+        this.cameraPosition.localPosition = Vector3.Lerp(this.cameraPosition.localPosition, this.currentZoom, Time.deltaTime * this.cameraMovementTime);
+    }
 
     #endregion
 }
