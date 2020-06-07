@@ -215,8 +215,10 @@ MonoBehaviour:
   cameraPosition: {fileID: 963194228}
   cameraNormalSpeed: 10
   cameraHighSpeed: 20
-  cameraMovementTime: 50
   cameraRotationSpeed: 1
+  cameraMovementTime: 50
+  zoomMinDistanceFromGround: 10
+  zoomMaxDistanceFromGround: 100
   zoomAmount: {x: 0, y: -10, z: 10}
 --- !u!1 &705507993
 GameObject:

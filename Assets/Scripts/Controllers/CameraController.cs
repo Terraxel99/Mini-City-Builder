@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
@@ -8,8 +7,12 @@ public class CameraController : MonoBehaviour
     public float cameraNormalSpeed = 10.0f;
     public float cameraHighSpeed = 25.0f;
     private float cameraMovementSpeed;
-    public float cameraMovementTime = 50.0f;
     public float cameraRotationSpeed = 5.0f;
+
+    public float cameraMovementTime = 50.0f;
+
+    public float zoomMinDistanceFromGround = 10.0f;
+    public float zoomMaxDistanceFromGround = 100.0f;
     public Vector3 zoomAmount;
 
     /// <summary>
@@ -24,6 +27,14 @@ public class CameraController : MonoBehaviour
     /// The zoom of the camera in the world.
     /// </summary>
     public Vector3 currentZoom { get; private set; }
+    /// <summary>
+    /// The start position of the drag camera rotation.
+    /// </summary>
+    public Vector3 dragRotateStartPosition { get; private set; }
+    /// <summary>
+    /// The current position of the drag camera rotation.
+    /// </summary>
+    public Vector3 dragRotateCurrentPosition { get; private set; }
 
 
     private void Start()
@@ -40,9 +51,12 @@ public class CameraController : MonoBehaviour
         this.ApplyCameraTranslations();
 
         this.CalculateCameraRotation();
+        this.CalculateCameraGrabRotation();
+        this.ApplyCameraRotations();
 
         this.ResetCurrentZoomToCameraPosition();
         this.CalculateCameraZoom();
+
     }
 
     #region Camera Translation
@@ -146,6 +160,27 @@ public class CameraController : MonoBehaviour
     }
 
     /// <summary>
+    /// Makes the calculations to rotate the camera on world grabbing.
+    /// </summary>
+    private void CalculateCameraGrabRotation()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            this.dragRotateStartPosition = Input.mousePosition;
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            this.dragRotateCurrentPosition = Input.mousePosition;
+            Vector3 difference = this.dragRotateStartPosition - this.dragRotateCurrentPosition;
+
+            this.dragRotateStartPosition = this.dragRotateCurrentPosition;
+
+            this.currentRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5f));
+        }
+    }
+
+    /// <summary>
     /// Applies rotation to the camera.
     /// </summary>
     /// <param name="positiveMovement">True if positive rotation angle. False if negative rotation angle.</param>
@@ -153,7 +188,14 @@ public class CameraController : MonoBehaviour
     {
         float rotationSpeed = positiveMovement ? this.cameraRotationSpeed : (-this.cameraRotationSpeed);
         this.currentRotation *= Quaternion.Euler(Vector3.up * rotationSpeed);
+    }
+    
 
+    /// <summary>
+    /// Applies the rotations to the camera based on the current rotation Vector.
+    /// </summary>
+    private void ApplyCameraRotations()
+    {
         this.transform.rotation = Quaternion.Lerp(this.transform.rotation, this.currentRotation, (Time.deltaTime * this.cameraMovementTime));
     }
 
@@ -187,6 +229,16 @@ public class CameraController : MonoBehaviour
     /// <param name="zoomIn">True to zoom in, false to zoom out.</param>
     private void ApplyZoom(bool zoomIn = true)
     {
+        // If we try to zoom and camera is positioned too near from the ground, zoom is cancelled.
+        // Same happens when user tries to zoom out while being too far away from the ground.
+        if ((zoomIn && this.cameraPosition.localPosition.y <= this.zoomMinDistanceFromGround)
+            || (!zoomIn && this.cameraPosition.localPosition.y >= this.zoomMaxDistanceFromGround))
+        {
+            return;
+        }
+
+        // Calculating and applying zoom :
+
         if (zoomIn)
             this.currentZoom += this.zoomAmount;
         else
