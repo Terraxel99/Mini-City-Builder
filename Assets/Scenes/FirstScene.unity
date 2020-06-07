@@ -216,6 +216,8 @@ MonoBehaviour:
   cameraNormalSpeed: 10
   cameraHighSpeed: 20
   cameraRotationSpeed: 1
+  cameraHorizontalGrabRotationSpeedReducer: 5
+  cameraVerticalGrabRotationSpeedReducer: 15
   cameraMovementTime: 50
   zoomMinDistanceFromGround: 10
   zoomMaxDistanceFromGround: 100

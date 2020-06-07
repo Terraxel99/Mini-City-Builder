@@ -2,15 +2,33 @@
 
 public class CameraController : MonoBehaviour
 {
+    [Header("Camera")]
+    [Space(10)]
     public Transform cameraPosition;
 
+    [Header("Camera Movement Speeds")]
+    [Space(10)]
     public float cameraNormalSpeed = 10.0f;
     public float cameraHighSpeed = 25.0f;
     private float cameraMovementSpeed;
-    public float cameraRotationSpeed = 5.0f;
 
+    [Header("Camera Rotation Speeds")]
+    [Space(10)]
+    public float cameraRotationSpeed = 5.0f;
+    public float cameraHorizontalGrabRotationSpeedReducer = 5.0f;
+
+    [Header("Camera Rotation Angles")]
+    [Space(10)]
+    public float cameraVerticalRotationMinAngle = 15.0f;
+    public float cameraVerticalRotationMaxAngle = 75.0f;
+
+    [Header("Camera Times")]
+    [Space(10)]
+    [Tooltip("The time for the camera to move from A to B")]
     public float cameraMovementTime = 50.0f;
 
+    [Header("Camera Zoom")]
+    [Space(10)]
     public float zoomMinDistanceFromGround = 10.0f;
     public float zoomMaxDistanceFromGround = 100.0f;
     public Vector3 zoomAmount;
@@ -20,9 +38,13 @@ public class CameraController : MonoBehaviour
     /// </summary>
     public Vector3 currentPosition { get; private set; }
     /// <summary>
-    /// The rotation of the camera in the world.
+    /// The rotation of the camera's parent object in the world.
     /// </summary>
     public Quaternion currentRotation { get; private set; }
+    /// <summary>
+    /// The rotation of the camera depending on its parent (local rotation).
+    /// </summary>
+    public Quaternion currentCameraLocalRotation { get; private set; }
     /// <summary>
     /// The zoom of the camera in the world.
     /// </summary>
@@ -42,6 +64,7 @@ public class CameraController : MonoBehaviour
         this.cameraMovementSpeed = this.cameraNormalSpeed;
         this.currentPosition = this.transform.position;
         this.currentRotation = this.transform.rotation;
+        this.currentCameraLocalRotation = this.cameraPosition.localRotation;
         this.ResetCurrentZoomToCameraPosition();
     }
 
@@ -56,7 +79,6 @@ public class CameraController : MonoBehaviour
 
         this.ResetCurrentZoomToCameraPosition();
         this.CalculateCameraZoom();
-
     }
 
     #region Camera Translation
@@ -152,11 +174,17 @@ public class CameraController : MonoBehaviour
     /// </summary>
     private void CalculateCameraRotation()
     {
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow))
             this.CalculateCameraRotationHorizontalAxis();
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             this.CalculateCameraRotationHorizontalAxis(false);
+
+        if (Input.GetKey(KeyCode.UpArrow))
+            this.CalculateCameraRotationVerticalAxis();
+
+        if (Input.GetKey(KeyCode.DownArrow))
+            this.CalculateCameraRotationVerticalAxis(false);
     }
 
     /// <summary>
@@ -176,12 +204,12 @@ public class CameraController : MonoBehaviour
 
             this.dragRotateStartPosition = this.dragRotateCurrentPosition;
 
-            this.currentRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5f));
+            this.currentRotation *= Quaternion.Euler(Vector3.up * (-difference.x / this.cameraHorizontalGrabRotationSpeedReducer));
         }
     }
 
     /// <summary>
-    /// Applies rotation to the camera.
+    /// Calculates the horizontal rotation of the world.
     /// </summary>
     /// <param name="positiveMovement">True if positive rotation angle. False if negative rotation angle.</param>
     private void CalculateCameraRotationHorizontalAxis(bool positiveMovement = true)
@@ -190,6 +218,31 @@ public class CameraController : MonoBehaviour
         this.currentRotation *= Quaternion.Euler(Vector3.up * rotationSpeed);
     }
     
+    /// <summary>
+    /// Calculates the rotation on the vertical axis.
+    /// </summary>
+    /// <param name="positiveMovement">True if the movement is a positive angle. False for a negative angle.</param>
+    private void CalculateCameraRotationVerticalAxis(bool positiveMovement = true)
+    {
+        if (!canRotateVertically(positiveMovement))
+            return;
+
+        float rotationSpeed = positiveMovement ? this.cameraRotationSpeed : (-this.cameraRotationSpeed);
+        this.currentCameraLocalRotation *= Quaternion.Euler(Vector3.right * rotationSpeed);
+    }
+
+    /// <summary>
+    /// Checks if the user can rotate the camera vertically or not.
+    /// </summary>
+    /// <param name="positiveMovement">True if the movement is increasing the camera angle. False if the movement is decreasing the camera angle.</param>
+    /// <returns>True if the user can rotate the camera.</returns>
+    private bool canRotateVertically(bool positiveMovement)
+    {
+        // If the movement is increasing the angle, the rotation has to be under the maximum angle
+        // If the movement is decreasing the angle, the rotation has to be above the minimum angle
+        return (positiveMovement && this.cameraPosition.localRotation.eulerAngles.x <= this.cameraVerticalRotationMaxAngle)
+            || (!positiveMovement && this.cameraPosition.localRotation.eulerAngles.x >= this.cameraVerticalRotationMinAngle);
+    }
 
     /// <summary>
     /// Applies the rotations to the camera based on the current rotation Vector.
@@ -197,6 +250,7 @@ public class CameraController : MonoBehaviour
     private void ApplyCameraRotations()
     {
         this.transform.rotation = Quaternion.Lerp(this.transform.rotation, this.currentRotation, (Time.deltaTime * this.cameraMovementTime));
+        this.cameraPosition.localRotation = Quaternion.Lerp(this.cameraPosition.localRotation, this.currentCameraLocalRotation, (Time.deltaTime * this.cameraMovementTime));
     }
 
     #endregion

@@ -19,17 +19,17 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //    var hit = new RaycastHit();
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var hit = new RaycastHit();
 
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        Vector3 buildPosition = new Vector3(Mathf.Floor(hit.point.x), (Mathf.Floor(hit.point.y) + .5f), Mathf.Floor(hit.point.z));
-        //        Instantiate(this.cubePrefab, buildPosition, Quaternion.identity);
-        //    }
-        //}
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 buildPosition = new Vector3(Mathf.Floor(hit.point.x), (Mathf.Floor(hit.point.y) + .5f), Mathf.Floor(hit.point.z));
+                Instantiate(this.cubePrefab, buildPosition, Quaternion.identity);
+            }
+        }
     }
 
     /// <summary>
