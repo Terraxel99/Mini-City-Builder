@@ -55,9 +55,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Constants\Constants.cs" />
+     <Compile Include="Assets\Scripts\Constants\Game.cs" />
+     <Compile Include="Assets\Scripts\Constants\World.cs" />
      <Compile Include="Assets\Scripts\Controllers\CameraController.cs" />
-     <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
+     <Compile Include="Assets\Scripts\Controllers\WorldController.cs" />
+     <Compile Include="Assets\Scripts\Models\Chunk.cs" />
+     <Compile Include="Assets\Scripts\Models\MeshData.cs" />
      <Compile Include="Assets\Scripts\Models\Tile.cs" />
      <Compile Include="Assets\Scripts\Models\World.cs" />
  <Reference Include="UnityEngine">

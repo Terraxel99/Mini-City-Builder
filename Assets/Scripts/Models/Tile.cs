@@ -2,7 +2,13 @@
 
 public class Tile
 {
+    /// <summary>
+    /// The tile position (bottom left of the tile)
+    /// </summary>
     public Vector3 Position { get; set; }
+    /// <summary>
+    /// The type of the tile.
+    /// </summary>
     public TileType Type { get; set; }
 
     public Tile(Vector3 position, TileType type = TileType.EMPTY)

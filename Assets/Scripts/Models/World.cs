@@ -4,65 +4,96 @@ using UnityEngine;
 
 public class World
 {
-    private static readonly int DEFAULT_WORLD_WIDTH = 10;
-    private static readonly int DEFAULT_WORLD_HEIGHT = 10;
+    #region Members
+
+    private int sizeX;
+    private int sizeZ;
+
+    #endregion
 
     /// <summary>
-    /// List of all the tiles.
+    /// The chunks.
     /// </summary>
-    public List<Tile> Tiles { get; set; }
-
+    public Chunk[,] Chunks { get; private set; }
     /// <summary>
-    /// Height of the world.
+    /// The origin position of the world (bottom left of the chunk)
     /// </summary>
-    public int Height { get; private set; }
+    public Vector3 Origin { get; private set; }
     /// <summary>
-    /// Width of the world.
+    /// Number of chunks on X axis.
     /// </summary>
-    public int Width { get; private set; }
-
-    public World(int width, int height)
+    public int ChunksX { get; private set; }
+    /// <summary>
+    /// Number of chunks on Z axis.
+    /// </summary>
+    public int ChunksZ { get; private set; }
+    /// <summary>
+    /// The size of a chunk.
+    /// </summary>
+    public int ChunkSize { get; private set; }
+    /// <summary>
+    /// The number of tiles in the world.
+    /// </summary>
+    public int NbTiles
     {
-        this.Width = width;
-        this.Height = height;
-
-        this.Tiles = new List<Tile>();
-        this.CreateTiles();
-    }
-
-    public World() : this(DEFAULT_WORLD_WIDTH, DEFAULT_WORLD_HEIGHT) { }
-
-    /// <summary>
-    /// Populates the list of tiles.
-    /// </summary>
-    private void CreateTiles()
-    {
-        for (int x = 0; x < this.Width; x++)
+        get
         {
-            for (int z = 0; z < this.Height; z++)
-            {
-                this.Tiles.Add(new Tile(x, z, Tile.TileType.EMPTY));
-            }
+            return this.sizeX * this.sizeZ;
         }
     }
-
     /// <summary>
-    /// Returns a tile at given X and Z coordinates.
+    /// The number of chunks in the world.
     /// </summary>
-    /// <param name="x">The X position in the world.</param>
-    /// <param name="z">The Z position in the world.</param>
-    /// <returns>The tile.</returns>
-    public Tile GetTileAt(int x, int z)
+    public int NbChunks
     {
-        return this.Tiles.FirstOrDefault((tile) => tile.Position.x == x && tile.Position.z == z);
+        get 
+        { 
+            return this.ChunksX * this.ChunksZ; 
+        }
+    }
+    
+    public World(int sizeX, int sizeZ, Vector3 origin, int chunkSize = 10)
+    {
+        this.sizeX = sizeX;
+        this.sizeZ = sizeZ;
+        this.ChunkSize = chunkSize;
+        this.Origin = origin;
+
+        this.CreateChunks();
     }
 
     /// <summary>
-    /// Gets the list of all the tiles.
+    /// Creates all the chunk data of the world.
     /// </summary>
-    /// <returns>The tile list.</returns>
-    public List<Tile> GetAllTiles()
+    private void CreateChunks()
     {
-        return this.Tiles;
+        // Calculating number of chunks
+        this.ChunksX = Mathf.CeilToInt((float)this.sizeX / (float)this.ChunkSize);
+        this.ChunksZ = Mathf.CeilToInt((float)this.sizeZ / (float)this.ChunkSize);
+
+        this.Chunks = new Chunk[this.ChunksX, this.ChunksZ];
+
+        for (int x = 0; x < this.ChunksX; x++)
+        {
+            for(int z = 0; z < this.ChunksZ; z++)
+            {
+                // If we are at the last chunk on the X axis, we might need to adapt the chunk size on X axis since it might be an incomplete chunk
+                // If it is not the last chunk, the chunk has a full square size.
+                // Complete size of world if the chunk was fully filled - real world size = nb of void tiles => size of chunk - nb of void tiles = nb of remaining filled tiles.
+                int chunkSizeX = (x == (this.ChunksX - 1)) ?
+                    this.ChunkSize - ((this.ChunkSize * this.ChunksX) - this.sizeX) :
+                    this.ChunkSize;
+
+                // Repeating operation for Z axis
+                int chunkSizeZ = (z == (this.ChunksZ - 1)) ?
+                    this.ChunkSize - ((this.ChunkSize * this.ChunksZ) - this.sizeZ) :
+                    this.ChunkSize;
+
+                // Calculating origin and creating chunk
+                var chunkOrigin = new Vector3((x * this.ChunkSize), 0f, (z * this.ChunkSize));
+                this.Chunks[x, z] = new Chunk(chunkSizeX, chunkSizeZ, chunkOrigin); 
+            }
+        }
+        
     }
 }

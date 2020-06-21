@@ -147,13 +147,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 88586887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bd1d83437edcd449bb0d9e43cf62289, type: 3}
+  m_Script: {fileID: 11500000, guid: 456e99a0688a2464790617472718f794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundPrefab: {fileID: 4096228990111095745, guid: 8cec2efac859b5242ae22cacce476988,
-    type: 3}
-  cubePrefab: {fileID: 1397496657369718707, guid: 17306082ea6f77549bafd45a0220b8ac,
-    type: 3}
+  sizeX: 21
+  sizeZ: 22
+  chunkSize: 10
+  tileSize: 1
+  redMaterial: {fileID: 2100000, guid: e24d1b4f8dee7be4ebd4615d1650a4ec, type: 2}
 --- !u!4 &88586889
 Transform:
   m_ObjectHideFlags: 0
@@ -217,7 +218,8 @@ MonoBehaviour:
   cameraHighSpeed: 20
   cameraRotationSpeed: 1
   cameraHorizontalGrabRotationSpeedReducer: 5
-  cameraVerticalGrabRotationSpeedReducer: 15
+  cameraVerticalRotationMinAngle: 15
+  cameraVerticalRotationMaxAngle: 75
   cameraMovementTime: 50
   zoomMinDistanceFromGround: 10
   zoomMaxDistanceFromGround: 100
@@ -364,7 +366,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 600
   field of view: 60
   orthographic: 0
   orthographic size: 5
