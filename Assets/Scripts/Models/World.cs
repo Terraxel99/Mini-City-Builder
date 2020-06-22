@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class World
 {
-    #region Members
-
-    private int sizeX;
-    private int sizeZ;
-
-    #endregion
-
     /// <summary>
     /// The chunks.
     /// </summary>
@@ -19,6 +12,14 @@ public class World
     /// The origin position of the world (bottom left of the chunk)
     /// </summary>
     public Vector3 Origin { get; private set; }
+    /// <summary>
+    /// The world size on the X axis.
+    /// </summary>
+    public int SizeX { get; private set; }
+    /// <summary>
+    /// The world size on the Z axis.
+    /// </summary>
+    public int SizeZ { get; private set; }
     /// <summary>
     /// Number of chunks on X axis.
     /// </summary>
@@ -38,7 +39,7 @@ public class World
     {
         get
         {
-            return this.sizeX * this.sizeZ;
+            return this.SizeX * this.SizeZ;
         }
     }
     /// <summary>
@@ -54,8 +55,8 @@ public class World
     
     public World(int sizeX, int sizeZ, Vector3 origin, int chunkSize = 10)
     {
-        this.sizeX = sizeX;
-        this.sizeZ = sizeZ;
+        this.SizeX = sizeX;
+        this.SizeZ = sizeZ;
         this.ChunkSize = chunkSize;
         this.Origin = origin;
 
@@ -68,8 +69,8 @@ public class World
     private void CreateChunks()
     {
         // Calculating number of chunks
-        this.ChunksX = Mathf.CeilToInt((float)this.sizeX / (float)this.ChunkSize);
-        this.ChunksZ = Mathf.CeilToInt((float)this.sizeZ / (float)this.ChunkSize);
+        this.ChunksX = Mathf.CeilToInt((float)this.SizeX / (float)this.ChunkSize);
+        this.ChunksZ = Mathf.CeilToInt((float)this.SizeZ / (float)this.ChunkSize);
 
         this.Chunks = new Chunk[this.ChunksX, this.ChunksZ];
 
@@ -81,12 +82,12 @@ public class World
                 // If it is not the last chunk, the chunk has a full square size.
                 // Complete size of world if the chunk was fully filled - real world size = nb of void tiles => size of chunk - nb of void tiles = nb of remaining filled tiles.
                 int chunkSizeX = (x == (this.ChunksX - 1)) ?
-                    this.ChunkSize - ((this.ChunkSize * this.ChunksX) - this.sizeX) :
+                    this.ChunkSize - ((this.ChunkSize * this.ChunksX) - this.SizeX) :
                     this.ChunkSize;
 
                 // Repeating operation for Z axis
                 int chunkSizeZ = (z == (this.ChunksZ - 1)) ?
-                    this.ChunkSize - ((this.ChunkSize * this.ChunksZ) - this.sizeZ) :
+                    this.ChunkSize - ((this.ChunkSize * this.ChunksZ) - this.SizeZ) :
                     this.ChunkSize;
 
                 // Calculating origin and creating chunk

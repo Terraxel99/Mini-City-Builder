@@ -150,11 +150,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 456e99a0688a2464790617472718f794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sizeX: 21
-  sizeZ: 22
-  chunkSize: 10
+  sizeX: 40
+  sizeZ: 40
+  chunkSize: 20
   tileSize: 1
-  redMaterial: {fileID: 2100000, guid: e24d1b4f8dee7be4ebd4615d1650a4ec, type: 2}
+  redMaterial: {fileID: 2100000, guid: 4eabfbad69017b34691a6e7a11f16e01, type: 2}
 --- !u!4 &88586889
 Transform:
   m_ObjectHideFlags: 0

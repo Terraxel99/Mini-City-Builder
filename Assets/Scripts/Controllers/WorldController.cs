@@ -11,7 +11,7 @@ public class WorldController : MonoBehaviour
     [Space]
 
     [Header("Grid settings")]
-    [Range(10.0f, 50.0f)]
+    [Range(20.0f, 60.0f)]
     public int chunkSize = 10;
     public float tileSize = 1.0f;
 
@@ -66,6 +66,8 @@ public class WorldController : MonoBehaviour
 
         chunk.MeshData.Vertices = new Vector3[nbTiles * 4]; // Each tile has 4 vertices.
         chunk.MeshData.Triangles = new int[nbTiles * 2 * 3]; // Each tile has 2 triangles which have 3 points.
+        chunk.MeshData.Normals = new Vector3[nbTiles * 4]; // Same amount than vertices
+        chunk.MeshData.Uvs = new Vector2[nbTiles * 4]; // Same amount than vertices
 
         int currentTile = 0;
 
@@ -86,6 +88,16 @@ public class WorldController : MonoBehaviour
                 chunk.MeshData.Triangles[(6 * currentTile) + 4] = (currentTile * 4 + 3);
                 chunk.MeshData.Triangles[(6 * currentTile) + 5] = (currentTile * 4 + 2);
 
+                chunk.MeshData.Normals[currentTile * 4] = Vector3.up;
+                chunk.MeshData.Normals[(currentTile * 4) + 1] = Vector3.up;
+                chunk.MeshData.Normals[(currentTile * 4) + 2] = Vector3.up;
+                chunk.MeshData.Normals[(currentTile * 4) + 3] = Vector3.up;
+
+                chunk.MeshData.Uvs[(currentTile * 4)] = new Vector2((float)(x + chunk.Origin.x)/this.sizeX, (float)(z + chunk.Origin.z)/this.sizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 1] = new Vector2((float)(x + chunk.Origin.x) / this.sizeX, (float)((z + chunk.Origin.z) + 1) / this.sizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 2] = new Vector2((float)((x + chunk.Origin.x) + 1)/ this.sizeX, (float)(z + chunk.Origin.z) / this.sizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 3] = new Vector2((float)((x + chunk.Origin.x) + 1) / this.sizeX, (float)((z + chunk.Origin.z) + 1) / this.sizeZ);
+
                 currentTile++;
             }
         }
@@ -96,6 +108,8 @@ public class WorldController : MonoBehaviour
         // Rendering chunk
         mesh.vertices = chunk.MeshData.Vertices;
         mesh.triangles = chunk.MeshData.Triangles;
+        mesh.normals = chunk.MeshData.Normals;
+        mesh.uv = chunk.MeshData.Uvs;
 
         mesh.RecalculateNormals();
     }
