@@ -69,10 +69,8 @@ public class WorldController : MonoBehaviour
         chunk.MeshData.Normals = new Vector3[nbTiles * 4]; // Same amount than vertices
         chunk.MeshData.Uvs = new Vector2[nbTiles * 4]; // Same amount than vertices
 
-        int currentTile = 0;
-
         // For each tile of the chunk, we create 4 vertices and 2 triangles
-        for (int z = 0; z < chunk.SizeZ; z++)
+        for (int z = 0, currentTile = 0; z < chunk.SizeZ; z++)
         {
             for (int x = 0; x < chunk.SizeX; x++)
             {
@@ -93,10 +91,10 @@ public class WorldController : MonoBehaviour
                 chunk.MeshData.Normals[(currentTile * 4) + 2] = Vector3.up;
                 chunk.MeshData.Normals[(currentTile * 4) + 3] = Vector3.up;
 
-                chunk.MeshData.Uvs[(currentTile * 4)] = new Vector2((float)(x + chunk.Origin.x)/this.sizeX, (float)(z + chunk.Origin.z)/this.sizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 1] = new Vector2((float)(x + chunk.Origin.x) / this.sizeX, (float)((z + chunk.Origin.z) + 1) / this.sizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 2] = new Vector2((float)((x + chunk.Origin.x) + 1)/ this.sizeX, (float)(z + chunk.Origin.z) / this.sizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 3] = new Vector2((float)((x + chunk.Origin.x) + 1) / this.sizeX, (float)((z + chunk.Origin.z) + 1) / this.sizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4)] = new Vector2((float)(x + chunk.Origin.x)/this.World.SizeX, (float)(z + chunk.Origin.z)/ this.World.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 1] = new Vector2((float)(x + chunk.Origin.x) / this.World.SizeX, (float)((z + chunk.Origin.z) + 1) / this.World.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 2] = new Vector2((float)((x + chunk.Origin.x) + 1)/ this.World.SizeX, (float)(z + chunk.Origin.z) / this.World.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 3] = new Vector2((float)((x + chunk.Origin.x) + 1) / this.World.SizeX, (float)((z + chunk.Origin.z) + 1) / this.World.SizeZ);
 
                 currentTile++;
             }
