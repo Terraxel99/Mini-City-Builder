@@ -62,6 +62,8 @@
      <Compile Include="Assets\Scripts\Models\Chunk.cs" />
      <Compile Include="Assets\Scripts\Models\MeshData.cs" />
      <Compile Include="Assets\Scripts\Models\Tile.cs" />
+     <Compile Include="Assets\Scripts\Models\TileState.cs" />
+     <Compile Include="Assets\Scripts\Models\TileType.cs" />
      <Compile Include="Assets\Scripts\Models\World.cs" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.14f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

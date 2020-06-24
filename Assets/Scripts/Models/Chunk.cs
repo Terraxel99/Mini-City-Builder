@@ -55,7 +55,7 @@ public class Chunk
             for (int z = 0; z < this.SizeZ; z++)
             {
                 var tilePosition = new Vector3(x, 0f, z) + this.Origin;
-                this.Tiles[x, z] = new Tile(tilePosition, Tile.TileType.EMPTY);
+                this.Tiles[x, z] = new Tile(tilePosition, TileState.EMPTY);
             }
         }
     }
