@@ -11,9 +11,14 @@ public class WorldController : MonoBehaviour
     [Space]
 
     [Header("Grid settings")]
-    [Range(20.0f, 60.0f)]
+    [Range(10.0f, 128.0f)]
     public int chunkSize = 10;
     public float tileSize = 1.0f;
+
+    [Header("Textures")]
+    public Texture2D TilesTextures;
+    public int TileResolution = 16;
+    public Material mapMaterial;
 
     #endregion
 
@@ -26,7 +31,6 @@ public class WorldController : MonoBehaviour
     /// </summary>
     public GameObject[,] ChunksGameobjects { get; private set; }
 
-    public Material redMaterial;
 
     private void Start()
     {
@@ -91,17 +95,15 @@ public class WorldController : MonoBehaviour
                 chunk.MeshData.Normals[(currentTile * 4) + 2] = Vector3.up;
                 chunk.MeshData.Normals[(currentTile * 4) + 3] = Vector3.up;
 
-                chunk.MeshData.Uvs[(currentTile * 4)] = new Vector2((float)(x + chunk.Origin.x)/this.World.SizeX, (float)(z + chunk.Origin.z)/ this.World.SizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 1] = new Vector2((float)(x + chunk.Origin.x) / this.World.SizeX, (float)((z + chunk.Origin.z) + 1) / this.World.SizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 2] = new Vector2((float)((x + chunk.Origin.x) + 1)/ this.World.SizeX, (float)(z + chunk.Origin.z) / this.World.SizeZ);
-                chunk.MeshData.Uvs[(currentTile * 4) + 3] = new Vector2((float)((x + chunk.Origin.x) + 1) / this.World.SizeX, (float)((z + chunk.Origin.z) + 1) / this.World.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4)] = new Vector2((float)x / chunk.SizeX, (float)z / chunk.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 1] = new Vector2((float)x / chunk.SizeX, (float)(z + 1) / chunk.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 2] = new Vector2((float)(x + 1)/ chunk.SizeX, (float)z / chunk.SizeZ);
+                chunk.MeshData.Uvs[(currentTile * 4) + 3] = new Vector2((float)(x + 1) / chunk.SizeX, (float)(z + 1) / chunk.SizeZ);
 
                 currentTile++;
             }
         }
 
-        var renderer = go.GetComponent<MeshRenderer>();
-        renderer.material = this.redMaterial;
 
         // Rendering chunk
         mesh.vertices = chunk.MeshData.Vertices;
@@ -110,5 +112,37 @@ public class WorldController : MonoBehaviour
         mesh.uv = chunk.MeshData.Uvs;
 
         mesh.RecalculateNormals();
+
+        var renderer = go.GetComponent<MeshRenderer>();
+        renderer.material = new Material(mapMaterial);
+        renderer.sharedMaterials[0].mainTexture = this.BuildTexture(chunk);
+    }
+
+    private Texture2D BuildTexture(Chunk chunk)
+    {
+        int nbRows = this.TilesTextures.height / this.TileResolution;
+        int tileTexturePerRow = this.TilesTextures.width / this.TileResolution;
+
+        Debug.Log(chunk.SizeX);
+
+        var texture = new Texture2D(this.TileResolution * chunk.SizeX, this.TileResolution * chunk.SizeZ);
+
+        for (int z = 0; z < chunk.SizeZ; z++)
+        {
+            for (int x = 0; x < chunk.SizeX; x++)
+            {
+                int offset = Random.Range(0, 4);
+                Color[] colors = this.TilesTextures.GetPixels(16 * offset, 0, this.TileResolution, this.TileResolution);
+
+                texture.SetPixels(x * this.TileResolution, z * this.TileResolution, this.TileResolution, this.TileResolution, colors);
+            }
+        }
+
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        texture.Apply();
+
+        return texture;
     }
 }

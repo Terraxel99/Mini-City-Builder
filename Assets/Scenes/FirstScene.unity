@@ -152,9 +152,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sizeX: 40
   sizeZ: 40
-  chunkSize: 20
+  chunkSize: 10
   tileSize: 1
-  redMaterial: {fileID: 2100000, guid: 4eabfbad69017b34691a6e7a11f16e01, type: 2}
+  TilesTextures: {fileID: 2800000, guid: 4636e14f6f857534c9e4fc456a87eb27, type: 3}
+  TileResolution: 16
+  mapMaterial: {fileID: 2100000, guid: 4eabfbad69017b34691a6e7a11f16e01, type: 2}
 --- !u!4 &88586889
 Transform:
   m_ObjectHideFlags: 0
@@ -366,7 +368,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 600
+  far clip plane: 1000
   field of view: 60
   orthographic: 0
   orthographic size: 5
